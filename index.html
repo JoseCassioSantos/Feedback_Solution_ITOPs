@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="https://neoservice.neobpo.com.br/favicons/apple-icon-114x114.png" type="image/x-icon">
+    <title>Feedback de Atendimento</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            background-image: url('https://neoservice.neobpo.com.br/tas/image?key=lookandfeel.login.background_image.original');
+            background-repeat: no-repeat;
+            background-size: cover;
+
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        h2 { margin-top: 0; color: #333; font-size: 1.2rem; }
+
+        /* Estilização das Estrelas (Mantendo a lógica de hover reverso) */
+        .rating {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+
+        .rating input { display: none; }
+
+        .rating label {
+            cursor: pointer;
+            width: 45px;
+            font-size: 35px;
+            color: #ddd;
+            transition: color 0.2s;
+        }
+
+        .rating label:before { content: '★'; }
+        
+        /* Pintar estrelas selecionadas e no hover */
+        .rating input:checked ~ label,
+        .rating label:hover,
+        .rating label:hover ~ label {
+            color: #f5b301;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box; /* Garante que o padding não quebre a largura */
+            resize: vertical;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 15px;
+            padding: 12px;
+            cursor: pointer;
+            background-color: #1201af;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        button:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <span><img src="https://neoservice.neobpo.com.br/tas/image?key=lookandfeel.operator.login.logo" alt="" style="width: 400px;"></span>
+        <h2>Sua opinião é muito importante!</h2>
+        <form id="feedbackForm">
+            <div class="rating">
+                <input type="radio" name="stars" id="star5" value="5"><label for="star5"></label>
+                <input type="radio" name="stars" id="star4" value="4"><label for="star4"></label>
+                <input type="radio" name="stars" id="star3" value="3"><label for="star3"></label>
+                <input type="radio" name="stars" id="star2" value="2"><label for="star2"></label>
+                <input type="radio" name="stars" id="star1" value="1"><label for="star1"></label>
+            </div>
+
+            <label for="comment" style="font-size: 0.9rem; color: #666;">Comentários adicionais:</label>
+            <textarea id="comment" placeholder="Como podemos melhorar?"></textarea>
+
+            <button type="submit">Enviar Avaliação</button>
+        </form>
+    </div>
+
+    <script>
+        // 1. LÓGICA AO CARREGAR A PÁGINA (Captura nota do e-mail)
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const rating = urlParams.get('id'); // Pega o valor de ?id=X
+
+            console.log("ID do chamado capturado:", rating);
+        };
+
+        // 2. LÓGICA DE ENVIO DO FORMULÁRIO (Gera o JSON para o PUT)
+        document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const selectedStar = document.querySelector('input[name="stars"]:checked');
+            
+            // Validação simples
+            if (!selectedStar) {
+                alert("Por favor, selecione uma nota antes de enviar.");
+                return;
+            }
+
+            const data = {
+                "feedbackRating": parseInt(selectedStar.value),
+                "feedbackMessage": document.getElementById('comment').value
+            };
+
+            console.log("Objeto JSON pronto para o PUT:", data);
+
+            // Exemplo de integração real:
+
+            const rating = 'TKT-01251358' // Substitua pelo ID capturado anteriormente
+
+            fetch(' https://neoservice.neobpo.com.br/tas/api/incidents/number/' + rating, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json',
+                'Authorization': 'Basic Y2Fzc2lvLnNhbnRvczpvNG5vby1sZnp1bi14NDJlbi01anZzbC00bHM1Nw==', },
+                body: JSON.stringify(data)
+            })
+            .then(res => alert('Obrigado! Feedback enviado.'))
+            .catch(err => alert('Erro ao enviar feedback.'));
+            
+
+            alert('JSON gerado com sucesso! Veja o console do navegador.');
+        });
+    </script>
+
+</body>
+</html>
