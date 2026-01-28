@@ -105,11 +105,14 @@
 
     <script>
         // 1. LÓGICA AO CARREGAR A PÁGINA (Captura nota do e-mail)
-        window.onload = function() {
+        window.onload = function(id) {
             const urlParams = new URLSearchParams(window.location.search);
             const rating = urlParams.get('id'); // Pega o valor de ?id=X
 
             console.log("ID do chamado capturado:", rating);
+
+            return rating;
+
         };
 
         // 2. LÓGICA DE ENVIO DO FORMULÁRIO (Gera o JSON para o PUT)
@@ -134,6 +137,11 @@
             // Exemplo de integração real:
 
             //const rating = 'TKT-01251358' // Substitua pelo ID capturado anteriormente
+
+            const rating = window.onload(); // Captura o ID do chamado
+
+            console.log("Enviando feedback para o chamado ID:", rating);
+            
 
             fetch(' https://neoservice.neobpo.com.br/tas/api/incidents/number/' + rating, {
                 method: 'PUT',
